@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/shutdown.png</file>
+    </qresource>
+</RCC>
