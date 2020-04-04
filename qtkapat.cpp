@@ -1,4 +1,4 @@
-//--------------------------------------------------------------------------+
+﻿//--------------------------------------------------------------------------+
 //                                                                          *
 //    "Qtkapat: GNU/Linux ve Windows için süre ayarlı sistem kapatıcı"      *
 //              Copyright(C) 2020, FB <ironic{at}yaani.com>                 *
@@ -62,7 +62,7 @@ Qtkapat::Qtkapat(QWidget *parent) :
     ui->pushButton_ip->setEnabled(false);
     //Belirtilen saat:
     ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
-    //Belirtilen zaman tarih:
+    //Belirtilen zaman: tarih ve saat ayarı
     ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
     ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit_bz->setDateTime(QDateTime::currentDateTime().addSecs(60));
@@ -126,7 +126,7 @@ void Qtkapat::LinuxKomutlari() {
             kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
             ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
             o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
-            askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement" \
+            askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement"
                                 " /org/freedesktop/PowerManagement Suspend");
             qDebug("KDE");
 
@@ -138,11 +138,11 @@ void Qtkapat::LinuxKomutlari() {
             qDebug("xfce");
 
         } else {  //systemd
-           kapat_komutu = "systemctl poweroff";
-           ybaslat_komutu = "systemctl restart";
-           o_kapat_komutu = QStringLiteral("loginctl terminate-user %1").arg(user);
-           askiya_al_komutu ="systemctl suspend";
-           qDebug("systemd");
+            kapat_komutu = "systemctl poweroff";
+            ybaslat_komutu = "systemctl restart";
+            o_kapat_komutu = QStringLiteral("loginctl terminate-user %1").arg(user);
+            askiya_al_komutu ="systemctl suspend";
+            qDebug("systemd");
         }
     }
 }
@@ -216,16 +216,16 @@ void Qtkapat::IslemZamani()
     if (ui->radioButton_bz->isChecked()) {
         qint64 simdikiZaman = QDateTime::currentSecsSinceEpoch();
         QDateTime secilenZamanS= ui->dateTimeEdit_bz->dateTime();
-        qint64 secilenZaman = secilenZamanS.toSecsSinceEpoch() - \
-                                (ui->dateTimeEdit_bz->time().second());
+        qint64 secilenZaman = secilenZamanS.toSecsSinceEpoch() -
+                              (ui->dateTimeEdit_bz->time().second());
         hedef_sure = secilenZaman - simdikiZaman;
 
       // Belirtilen saat düğmesi
     } else if (ui->radioButton_bs->isChecked()) {
         QTime simdikiSaatS =QTime::currentTime();
         int simdikiSaat = QTime(0,0,0).secsTo(simdikiSaatS);
-        int secilenSaat = (ui->timeEdit_bs->time().hour() *3600) + \
-                           (ui->timeEdit_bs->time().minute() *60);
+        int secilenSaat = (ui->timeEdit_bs->time().hour() *3600) +
+                          (ui->timeEdit_bs->time().minute() *60);
         hedef_sure = secilenSaat - simdikiSaat;
 
       // Belirtilen dakika düğmesi
@@ -236,8 +236,8 @@ void Qtkapat::IslemZamani()
     if (hedef_sure <= 0) {
         qDebug( "hedef süre :" "%d", hedef_sure);
         QMessageBox::warning(this, "Qtkapat",
-                                "Geçmiş ya da hatalı süre!",
-                                         QMessageBox::Ok);
+                             "Geçmiş ya da hatalı süre!",
+                             QMessageBox::Ok);
     } else {
         ui->pushButton_gb->setEnabled(false);
         ui->pushButton_ip->setEnabled(true);
@@ -269,7 +269,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_ok->isChecked()) { // oturumu kapat düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Oturumunuz kapatılacak.");
-                   QProcess::execute(o_kapat_komutu);
+                    QProcess::execute(o_kapat_komutu);
                 } else {
                     gerisayimStr2 =" oturumunuzu kapatacak";
                     IslemZamani();
@@ -278,7 +278,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_as->isChecked()) { //askıya al düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Sisteminiz askıya alınacak");
-                   QProcess::execute(askiya_al_komutu);
+                    QProcess::execute(askiya_al_komutu);
                 } else {
                     gerisayimStr2 = " askıya alınacak";
                     IslemZamani();
@@ -286,7 +286,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else {
         ui->label_us->setText("Herhangi bir görev seçmediniz.");
         QApplication::processEvents();
-        QThread::msleep(1500);
+        QThread::msleep(1200);
         ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
     }
 }
@@ -297,10 +297,9 @@ void Qtkapat::on_pushButton_ip_clicked()
     zamanlayici->stop();
     ui->label_us->setText("Qtkapat: İşleminiz iptal edildi.");
     QMessageBox::information(this, "Qtkapat",
-                            "İşleminiz iptal edildi.",
-                                     QMessageBox::Ok);
-    QApplication::processEvents();
-    QThread::msleep(1500);
+                             "İşleminiz iptal edildi.",
+                             QMessageBox::Ok);
+
     ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
     ui->pushButton_ip->setEnabled(false);
     ui->pushButton_gb->setEnabled(true);
@@ -310,7 +309,8 @@ void Qtkapat::slot_zamanlayici()
 {
     int uyar_spinbox = ui->spinBox_uy->value();
     int uyar_sure = uyar_spinbox * 60;
-    QString uyar_ileti = QStringLiteral("Seçtiğiniz görev %1 dk sonra gerçekleştirilecek").arg(uyar_spinbox);
+    QString uyar_ileti;
+    uyar_ileti = QStringLiteral("Seçtiğiniz görev %1 dk sonra gerçekleştirilecek").arg(uyar_spinbox);
 
     if (hedef_sure > 0) {
         int saat = hedef_sure / 3600;
@@ -327,8 +327,7 @@ void Qtkapat::slot_zamanlayici()
     }
 
     if ((hedef_sure - uyar_sure) == 0) {
-        if(hedef_sure > 0)
-            trayIcon->showMessage("Qtkapat", uyar_ileti, QSystemTrayIcon::Critical, 15000);
+        trayIcon->showMessage("Qtkapat", uyar_ileti, QSystemTrayIcon::Critical, 15000);
     }
 
     if (hedef_sure == 0) {
