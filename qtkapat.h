@@ -16,23 +16,25 @@ public:
     ~Qtkapat();
 
 protected:
-    void closeEvent(QCloseEvent *olay) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void on_pushButton_gb_clicked();
     void on_pushButton_ip_clicked();
     void slot_zamanlayici();
     void ZamaniGuncelle();
+    void LinuxKomutlari();
     void IslemZamani();
 
 
 private:
     Ui::Qtkapat *ui;
     QTimer *zamanlayici;
-    QTimer *gerisayim;
     QTimer *bir_saniye;
     int hedef_sure;
     QString gerisayimStr, gerisayimStr2;
+    QString kapat_komutu, ybaslat_komutu;
+    QString o_kapat_komutu, askiya_al_komutu;
 
 };
 #endif // QTKAPAT_H

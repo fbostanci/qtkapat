@@ -35,23 +35,17 @@
 #include <QThread>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QDebug>
 
 #if defined(Q_OS_LINUX)
-    // Komutlar KDE/Plasma içindir.
-    // Yorumlanmışlar genel içindir.
-    QString kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
-    //QString kapat_komutu = "systemctl poweroff";
-    QString ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
-    //QString ybaslat_komutu = "systemctl restart";
-    QString o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
-    //QString o_kapat_komutu ="loginctl terminate-user fa"; //$USER yerine kullanıcı_adı yazın.
-    QString askiya_al_komutu = "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement Suspend";
-    //QString askiya_al_komutu = "systemctl suspend";
+    constexpr int BU_BIR_LINUX = 1;
 #elif defined(Q_OS_WIN)
-    QString kapat_komutu = "shutdown -p";
-    QString ybaslat_komutu = "shutdown -r -t 0";
-    QString o_kapat_komutu = "shutdown -l";
-    QString askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
+    constexpr int BU_BIR_LINUX = 0;
+
+    kapat_komutu = "shutdown -p";
+    ybaslat_komutu = "shutdown -r -t 0";
+    o_kapat_komutu = "shutdown -l";
+    askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
 #endif
 
 
@@ -64,6 +58,7 @@ Qtkapat::Qtkapat(QWidget *parent) :
     this->setFixedHeight(375);
     this->setWindowTitle("QtKapat v0.0.1");
 
+    LinuxKomutlari();
     QStringList strList;
     strList << "Qtkapat" << "Sistem tepsisinde başlatıldı";
     MyTrayIcon * trayIcon = new MyTrayIcon(strList, this);
@@ -82,7 +77,6 @@ Qtkapat::Qtkapat(QWidget *parent) :
     ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
     //Belirtilen zaman tarih:
     ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
-    ui->dateTimeEdit_bz->setMinimumDate(QDate::currentDate());
     ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit_bz->setDateTime(QDateTime::currentDateTime().addSecs(60));
 
@@ -97,31 +91,76 @@ Qtkapat::~Qtkapat()
     delete ui;
 }
 
-void Qtkapat::closeEvent(QCloseEvent *olay)
+void Qtkapat::LinuxKomutlari() {
+    if (BU_BIR_LINUX == 1) {
+        QProcess bash,bash2, bash3;
+        bash.start("bash", QStringList()<<"-c"<<"if [[ -n $KDE_SESSION_UID ]];then echo kde;fi");
+        bash.waitForFinished();
+        QString output = bash.readAllStandardOutput();
+        output = output.trimmed();
+
+        bash2.start("bash", QStringList()<<"-c"<<"id -u -n");
+        bash2.waitForFinished();
+        QString user = bash2.readAllStandardOutput();
+        user = user.trimmed();
+
+        bash3.start("bash", QStringList()<<"-c"<<"if [[ -n $(pidof xfce4-session) ]];then echo xfce;fi");
+        bash3.waitForFinished();
+        QString output2 = bash3.readAllStandardOutput();
+        output2 = output2.trimmed();
+
+        if (output == "kde") {
+            kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
+            ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
+            o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
+            askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement" \
+                                " /org/freedesktop/PowerManagement Suspend");
+            qDebug("KDE");
+
+        } else if (output2 == "xfce") {
+            kapat_komutu = "xfce4-session-logout --halt";
+            ybaslat_komutu = "xfce4-session-logout --reboot";
+            o_kapat_komutu = "xfce4-session-logout --logout";
+            askiya_al_komutu ="xfce4-session-logout --suspend";
+            qDebug("xfce");
+
+        } else {  //systemd
+            kapat_komutu = "systemctl poweroff";
+            ybaslat_komutu = "systemctl restart";
+            o_kapat_komutu = QStringLiteral("loginctl terminate-user %1").arg(user);
+            askiya_al_komutu ="systemctl suspend";
+            qDebug("systemd");
+        }
+    }
+}
+
+
+void Qtkapat::closeEvent(QCloseEvent *event)
 {
-    QMessageBox iltKutu;
+    QMessageBox msgBox;
 
-    iltKutu.setWindowIcon(QIcon(":/images/shutdown.png"));
-    iltKutu.setIcon(QMessageBox::Question);
-    iltKutu.setText("Simge durumuna küçültülsün mü?");
+    msgBox.setWindowTitle("Qtkapat");
+    msgBox.setWindowIcon(QIcon(":/images/shutdown.png"));
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText("Simge durumuna küçültülsün mü?");
 
-    QAbstractButton* pButtonApply = iltKutu.addButton(("Küçült"), QMessageBox::ApplyRole);
-    QAbstractButton* pButtonNo = iltKutu.addButton(("İptal"), QMessageBox::NoRole);
-    QAbstractButton* pButtonYes = iltKutu.addButton(("Çıkış"), QMessageBox::YesRole);
+    QAbstractButton* pButtonYes = msgBox.addButton(("Küçült"), QMessageBox::YesRole);
+    QAbstractButton* pButtonNo = msgBox.addButton(("İptal"), QMessageBox::NoRole);
+    QAbstractButton* pButtonReject = msgBox.addButton(("Çıkış"), QMessageBox::RejectRole);
 
-      iltKutu.exec();
+    msgBox.exec();
 
-    if (iltKutu.clickedButton()==pButtonApply) {
+    if (msgBox.clickedButton()==pButtonYes) {
         qDebug("küçült");
-        olay->ignore();
+        event->ignore();
         this->hide();
-     } else if (iltKutu.clickedButton()==pButtonYes) {
+    } else if (msgBox.clickedButton()==pButtonReject) {
         qDebug("Çıkış");
-        olay->accept();
+        event->accept();
         this->close();
-     } else if (iltKutu.clickedButton()==pButtonNo) {
+     } else if (msgBox.clickedButton()==pButtonNo) {
         qDebug("iptal");
-        olay->ignore();
+        event->ignore();
     }
 }
 
@@ -138,18 +177,18 @@ void Qtkapat::IslemZamani()
     // Belirtilen zaman düğmesi
     if (ui->radioButton_bz->isChecked()) {
         qint64 simdikiZaman = QDateTime::currentSecsSinceEpoch();
-        QDateTime seciliZamanS= ui->dateTimeEdit_bz->dateTime();
-        qint64 secilenZaman = seciliZamanS.toSecsSinceEpoch() - \
+        QDateTime secilenZamanS= ui->dateTimeEdit_bz->dateTime();
+        qint64 secilenZaman = secilenZamanS.toSecsSinceEpoch() - \
                                 (ui->dateTimeEdit_bz->time().second());
         hedef_sure = secilenZaman - simdikiZaman;
 
       // Belirtilen saat düğmesi
     } else if (ui->radioButton_bs->isChecked()) {
-        QTime simdikiSaat =QTime::currentTime();
-        int simdikiZaman = QTime(0,0,0).secsTo(simdikiSaat);
-        int secilenZaman = (ui->timeEdit_bs->time().hour() *3600) + \
+        QTime simdikiSaatS =QTime::currentTime();
+        int simdikiSaat = QTime(0,0,0).secsTo(simdikiSaatS);
+        int secilenSaat = (ui->timeEdit_bs->time().hour() *3600) + \
                            (ui->timeEdit_bs->time().minute() *60);
-        hedef_sure = secilenZaman - simdikiZaman;
+        hedef_sure = secilenSaat - simdikiSaat;
 
       // Belirtilen dakika düğmesi
     } else if (ui->radioButton_dk->isChecked()) {
@@ -252,6 +291,7 @@ void Qtkapat::slot_zamanlayici()
         if(hedef_sure >0) {
             QMessageBox msgBox;
             msgBox.setText(uyar_ileti);
+            msgBox.setWindowTitle("Qtkapat");
             msgBox.setWindowIcon(QIcon(":/images/shutdown.png"));
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
