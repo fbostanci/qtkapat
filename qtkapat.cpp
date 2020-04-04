@@ -123,26 +123,26 @@ void Qtkapat::LinuxKomutlari() {
         }
 
         if (output == "kde") {
-           QString kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
-           QString ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
-           QString o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
-           QString askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement" \
+            kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
+            ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
+            o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
+            askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement" \
                                 " /org/freedesktop/PowerManagement Suspend");
             qDebug("KDE");
 
         } else if (output2 == "xfce") {
-           QString kapat_komutu = "xfce4-session-logout --halt";
-           QString ybaslat_komutu = "xfce4-session-logout --reboot";
-           QString o_kapat_komutu = "xfce4-session-logout --logout";
-           QString askiya_al_komutu ="xfce4-session-logout --suspend";
+            kapat_komutu = "xfce4-session-logout --halt";
+            ybaslat_komutu = "xfce4-session-logout --reboot";
+            o_kapat_komutu = "xfce4-session-logout --logout";
+            askiya_al_komutu ="xfce4-session-logout --suspend";
             qDebug("xfce");
 
         } else {  //systemd
-           QString kapat_komutu = "systemctl poweroff";
-           QString ybaslat_komutu = "systemctl restart";
-           QString o_kapat_komutu = QStringLiteral("loginctl terminate-user %1").arg(user);
-           QString askiya_al_komutu ="systemctl suspend";
-            qDebug("systemd");
+           kapat_komutu = "systemctl poweroff";
+           ybaslat_komutu = "systemctl restart";
+           o_kapat_komutu = QStringLiteral("loginctl terminate-user %1").arg(user);
+           askiya_al_komutu ="systemctl suspend";
+           qDebug("systemd");
         }
     }
 }
