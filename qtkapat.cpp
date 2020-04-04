@@ -26,7 +26,7 @@
 
 #include "qtkapat.h"
 #include "ui_qtkapat.h"
-#include "mytrayicon.h"
+
 
 #include <QProcess>
 #include <QTimer>
@@ -49,6 +49,7 @@
 #endif
 
 
+
 Qtkapat::Qtkapat(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Qtkapat)
@@ -59,10 +60,8 @@ Qtkapat::Qtkapat(QWidget *parent) :
     this->setWindowTitle("QtKapat v0.0.1");
 
     LinuxKomutlari();
-    QStringList strList;
-    strList << "Qtkapat" << "Sistem tepsisinde başlatıldı";
-    MyTrayIcon * trayIcon = new MyTrayIcon(strList, this);
-    trayIcon->show();
+    createActions();
+    createTrayIcon();
 
     zamanlayici = new QTimer(this);
     zamanlayici->setInterval(1000);
@@ -109,6 +108,14 @@ void Qtkapat::LinuxKomutlari() {
         QString output2 = bash3.readAllStandardOutput();
         output2 = output2.trimmed();
 
+        if (user == "root") {
+            ui->radioButton_kt->setEnabled(false);
+            ui->radioButton_yb->setEnabled(false);
+            ui->radioButton_ok->setEnabled(false);
+            ui->radioButton_as->setEnabled(false);
+            ui->label_us->setText("Qtkapat -> root haklarıyla kullanılamaz!!!");
+        }
+
         if (output == "kde") {
             kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
             ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
@@ -134,6 +141,31 @@ void Qtkapat::LinuxKomutlari() {
     }
 }
 
+
+void Qtkapat::createActions(){
+    gizle = new QAction(QString("Gizle"), this);
+    connect(gizle, SIGNAL(triggered()), this, SLOT(hide()));
+    goster = new QAction(QString("Göster"), this);
+    connect(goster, SIGNAL(triggered()), this, SLOT(show()));
+    cikis = new QAction(QString("Çıkış"), this);
+    connect(cikis, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
+
+void Qtkapat::createTrayIcon(){
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(goster);
+    trayIconMenu->addAction(gizle);
+    trayIconMenu->addAction(cikis);
+
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    QIcon icon(":/images/shutdown.png");
+    trayIcon->setIcon(icon);
+    trayIcon->setToolTip("Qtkapat v0.0.1");
+    QString ileti = "Sistem tepsisinde başlatıldı";
+    trayIcon->show();
+    trayIcon->showMessage("Qtkapat", ileti, QSystemTrayIcon::Information, 1000);
+}
 
 void Qtkapat::closeEvent(QCloseEvent *event)
 {
@@ -285,35 +317,12 @@ void Qtkapat::slot_zamanlayici()
           .arg(saniye, 2, 10, QChar('0'));
 
         ui->label_us->setText("Sisteminiz <b>" + gerisayimStr + "</b> sonra " + gerisayimStr2);
+        trayIcon->setToolTip("Sisteminiz " + gerisayimStr + " sonra " + gerisayimStr2);
     }
 
     if ((hedef_sure - uyar_sure) == 0) {
-        if(hedef_sure >0) {
-            QMessageBox msgBox;
-            msgBox.setText(uyar_ileti);
-            msgBox.setWindowTitle("Qtkapat");
-            msgBox.setWindowIcon(QIcon(":/images/shutdown.png"));
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
-            msgBox.button(QMessageBox::Ok)->animateClick(5000);
-
-            switch(msgBox.exec())
-            {
-            case QMessageBox::Ok:
-                break;
-            case QMessageBox::Cancel:
-                ui->pushButton_ip->setEnabled(false);
-                ui->pushButton_gb->setEnabled(true);
-                zamanlayici->stop();
-                ui->label_us->setText("Qtkapat: İşleminiz iptal edildi.");
-                QApplication::processEvents();
-                QThread::msleep(1500);
-                ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
-                return;
-                break;
-             default:;
-            }
-        }
+        if(hedef_sure > 0)
+            trayIcon->showMessage("Qtkapat", uyar_ileti, QSystemTrayIcon::Critical, 5000);
     }
 
     if (hedef_sure == 0) {

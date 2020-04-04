@@ -2,6 +2,10 @@
 #define QTKAPAT_H
 
 #include <QMainWindow>
+#include <QWidget>
+#include <QSystemTrayIcon>
+#include <QAction>
+#include <QMenu>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Qtkapat; }
@@ -23,18 +27,26 @@ private slots:
     void on_pushButton_ip_clicked();
     void slot_zamanlayici();
     void ZamaniGuncelle();
-    void LinuxKomutlari();
-    void IslemZamani();
-
+    void createActions();
 
 private:
     Ui::Qtkapat *ui;
     QTimer *zamanlayici;
     QTimer *bir_saniye;
+
+    void createTrayIcon();
+    void LinuxKomutlari();
+    void IslemZamani();
+
+    QAction *gizle;
+    QAction *goster;
+    QAction *cikis;
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
+
     int hedef_sure;
     QString gerisayimStr, gerisayimStr2;
     QString kapat_komutu, ybaslat_komutu;
     QString o_kapat_komutu, askiya_al_komutu;
-
 };
 #endif // QTKAPAT_H
