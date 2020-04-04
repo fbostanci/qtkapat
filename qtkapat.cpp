@@ -42,10 +42,10 @@
 #elif defined(Q_OS_WIN)
     constexpr int BU_BIR_LINUX = 0;
 
-    kapat_komutu = "shutdown -p";
-    ybaslat_komutu = "shutdown -r -t 0";
-    o_kapat_komutu = "shutdown -l";
-    askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
+    QString kapat_komutu = "shutdown -p";
+    QString ybaslat_komutu = "shutdown -r -t 0";
+    QString o_kapat_komutu = "shutdown -l";
+    QString askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
 #endif
 
 
