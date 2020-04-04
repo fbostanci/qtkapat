@@ -46,7 +46,5 @@ private:
 
     int hedef_sure;
     QString gerisayimStr, gerisayimStr2;
-    QString kapat_komutu, ybaslat_komutu;
-    QString o_kapat_komutu, askiya_al_komutu;
 };
 #endif // QTKAPAT_H
