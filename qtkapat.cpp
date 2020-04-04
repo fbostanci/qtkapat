@@ -27,7 +27,6 @@
 #include "qtkapat.h"
 #include "ui_qtkapat.h"
 
-
 #include <QProcess>
 #include <QTimer>
 #include <QTime>
@@ -58,20 +57,9 @@ Qtkapat::Qtkapat(QWidget *parent) :
     this->setFixedWidth(609);
     this->setFixedHeight(375);
     this->setWindowTitle("QtKapat v0.0.1");
-
-    LinuxKomutlari();
-    createActions();
-    createTrayIcon();
-
-    zamanlayici = new QTimer(this);
-    zamanlayici->setInterval(1000);
-    zamanlayici->setSingleShot(false);
-    connect(zamanlayici, SIGNAL(timeout()), this, SLOT(slot_zamanlayici()));
-
-
+    ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
     // İptal Et düğmesi
     ui->pushButton_ip->setEnabled(false);
-    ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
     //Belirtilen saat:
     ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
     //Belirtilen zaman tarih:
@@ -83,6 +71,15 @@ Qtkapat::Qtkapat(QWidget *parent) :
     bir_saniye = new QTimer(this);
     connect(bir_saniye, SIGNAL(timeout()), this, SLOT(ZamaniGuncelle()));
     bir_saniye->start(1000);
+
+    LinuxKomutlari();
+    createActions();
+    createTrayIcon();
+
+    zamanlayici = new QTimer(this);
+    zamanlayici->setInterval(1000);
+    zamanlayici->setSingleShot(false);
+    connect(zamanlayici, SIGNAL(timeout()), this, SLOT(slot_zamanlayici()));
 }
 
 Qtkapat::~Qtkapat()
@@ -113,7 +110,16 @@ void Qtkapat::LinuxKomutlari() {
             ui->radioButton_yb->setEnabled(false);
             ui->radioButton_ok->setEnabled(false);
             ui->radioButton_as->setEnabled(false);
-            ui->label_us->setText("Qtkapat -> root haklarıyla kullanılamaz!!!");
+            ui->radioButton_bz->setEnabled(false);
+            ui->radioButton_bs->setEnabled(false);
+            ui->radioButton_dk->setEnabled(false);
+            ui->radioButton_sy->setEnabled(false);
+            ui->dateTimeEdit_bz->setEnabled(false);
+            ui->timeEdit_bs->setEnabled(false);
+            ui->pushButton_gb->setEnabled(false);
+            ui->spinBox_uy->setEnabled(false);
+            ui->spinBox_dk->setEnabled(false);
+            ui->label_us->setText("<b>Qtkapat -> root haklarıyla kullanılamaz!!!</b>");
         }
 
         if (output == "kde") {
@@ -322,7 +328,7 @@ void Qtkapat::slot_zamanlayici()
 
     if ((hedef_sure - uyar_sure) == 0) {
         if(hedef_sure > 0)
-            trayIcon->showMessage("Qtkapat", uyar_ileti, QSystemTrayIcon::Critical, 5000);
+            trayIcon->showMessage("Qtkapat", uyar_ileti, QSystemTrayIcon::Critical, 15000);
     }
 
     if (hedef_sure == 0) {
