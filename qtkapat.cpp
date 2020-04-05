@@ -57,24 +57,16 @@ Qtkapat::Qtkapat(QWidget *parent) :
     this->setFixedWidth(609);
     this->setFixedHeight(375);
     this->setWindowTitle("QtKapat v1.0");
-    ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
-    // İptal Et düğmesi
-    ui->pushButton_ip->setEnabled(false);
-    //Belirtilen saat:
-    ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
-    //Belirtilen zaman: tarih ve saat ayarı
-    ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
-    ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
-    ui->dateTimeEdit_bz->setDateTime(QDateTime::currentDateTime().addSecs(60));
 
-    // arayüz saat timer nesnesi
-    bir_saniye = new QTimer(this);
-    connect(bir_saniye, SIGNAL(timeout()), this, SLOT(ZamaniGuncelle()));
-    bir_saniye->start(1000);
-
+    DugmeAyarlari();
     LinuxKomutlari();
     createActions();
     createTrayIcon();
+
+    // arayüz saat:
+    bir_saniye = new QTimer(this);
+    connect(bir_saniye, SIGNAL(timeout()), this, SLOT(ZamaniGuncelle()));
+    bir_saniye->start(1000);
 
     zamanlayici = new QTimer(this);
     zamanlayici->setInterval(1000);
@@ -85,6 +77,31 @@ Qtkapat::Qtkapat(QWidget *parent) :
 Qtkapat::~Qtkapat()
 {
     delete ui;
+}
+
+void Qtkapat::DugmeAyarlari() {
+    ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
+
+    //Belirtilen saat:
+    ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
+    //Belirtilen zaman: tarih ve saat ayarı
+    ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
+    ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
+    ui->dateTimeEdit_bz->setDateTime(QDateTime::currentDateTime().addSecs(60));
+
+    // İptal Et düğmesi
+    ui->pushButton_ip->setEnabled(false);
+    ui->pushButton_ip->setIcon(QIcon(":/images/cancel.png"));
+    ui->pushButton_ip->setIconSize(QSize(20,20));
+
+    // görevi başlat düğmesi
+    ui->pushButton_gb->setIcon(QIcon(":/images/start.png"));
+    ui->pushButton_gb->setIconSize(QSize(20,20));
+    // hakkında düğmesi
+    ui->pushButton_hk->setIcon(QIcon(":/images/info.png"));
+    ui->pushButton_hk->setIconSize(QSize(20,20));
+    ui->pushButton_hk->setStyleSheet("QPushButton {border-style: outset; border-width: 0px;}");
+
 }
 
 void Qtkapat::LinuxKomutlari() {
@@ -243,6 +260,15 @@ void Qtkapat::IslemZamani()
         ui->pushButton_ip->setEnabled(true);
         zamanlayici->start();
     }
+}
+
+//hakkında düğmesi
+void Qtkapat::on_pushButton_hk_clicked(){
+
+    QMessageBox::about( this, "Qtkapat 1.0",
+    "<h4>Süre ayarlı sistem kapatıcı</h4>"
+    "Copyright (c) 2020, FB "
+    "<a href=\"https://gitlab.com/fbostanci/qtkapat\">Uygulama sayfası</a>");
 }
 
 // Görev Başlat Düğmesi

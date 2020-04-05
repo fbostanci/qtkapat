@@ -25,6 +25,7 @@ protected:
 private slots:
     void on_pushButton_gb_clicked();
     void on_pushButton_ip_clicked();
+    void on_pushButton_hk_clicked();
     void slot_zamanlayici();
     void ZamaniGuncelle();
     void createActions();
@@ -34,6 +35,7 @@ private:
     QTimer *zamanlayici;
     QTimer *bir_saniye;
 
+    void DugmeAyarlari();
     void createTrayIcon();
     void LinuxKomutlari();
     void IslemZamani();
