@@ -23,7 +23,6 @@
 //                                                                          *
 //--------------------------------------------------------------------------+
 
-
 #include "qtkapat.h"
 #include "ui_qtkapat.h"
 
@@ -46,7 +45,6 @@
     QString o_kapat_komutu = "shutdown -l";
     QString askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
 #endif
-
 
 
 Qtkapat::Qtkapat(QWidget *parent) :
@@ -79,11 +77,15 @@ Qtkapat::~Qtkapat()
     delete ui;
 }
 
-void Qtkapat::DugmeAyarlari() {
+void Qtkapat::DugmeAyarlari()
+{
     ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
 
     //Belirtilen saat:
     ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
+    ui->timeEdit_bs->setMinimumTime(QTime::currentTime().addSecs(60));
+    // Belirtilen dakika
+    ui->spinBox_dk->setValue(5);
     //Belirtilen zaman: tarih ve saat ayarı
     ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
     ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
@@ -104,9 +106,11 @@ void Qtkapat::DugmeAyarlari() {
 
 }
 
-void Qtkapat::LinuxKomutlari() {
+void Qtkapat::LinuxKomutlari()
+{
     if (BU_BIR_LINUX == 1) {
         QProcess bash,bash2, bash3;
+
         bash.start("bash", QStringList()<<"-c"<<"if [[ -n $KDE_SESSION_UID ]];then echo kde;fi");
         bash.waitForFinished();
         QString output = bash.readAllStandardOutput();
@@ -165,7 +169,8 @@ void Qtkapat::LinuxKomutlari() {
 }
 
 
-void Qtkapat::createActions(){
+void Qtkapat::createActions()
+{
     gizle = new QAction(QString("Gizle"), this);
     connect(gizle, SIGNAL(triggered()), this, SLOT(hide()));
     goster = new QAction(QString("Göster"), this);
@@ -174,7 +179,8 @@ void Qtkapat::createActions(){
     connect(cikis, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
 
-void Qtkapat::createTrayIcon(){
+void Qtkapat::createTrayIcon()
+{
     trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(goster);
     trayIconMenu->addAction(gizle);
@@ -263,8 +269,8 @@ void Qtkapat::IslemZamani()
 }
 
 //hakkında düğmesi
-void Qtkapat::on_pushButton_hk_clicked(){
-
+void Qtkapat::on_pushButton_hk_clicked()
+{
     QMessageBox::about( this, "Qtkapat 1.0",
     "<h4>Süre ayarlı sistem kapatıcı</h4>"
     "Copyright (c) 2020, FB "
