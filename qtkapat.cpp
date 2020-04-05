@@ -3,7 +3,7 @@
 //    "Qtkapat: GNU/Linux ve Windows için süre ayarlı sistem kapatıcı"      *
 //              Copyright(C) 2020, FB <ironic{at}yaani.com>                 *
 //                 https://gitlab.com/fbostanci/qtkapat                     *
-//                          qtkapat v0.0.1                                  *
+//                            qtkapat v1.0                                  *
 //                              GPL v3                                      *
 //                                                                          *
 //--------------------------------------------------------------------------+
@@ -56,7 +56,7 @@ Qtkapat::Qtkapat(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedWidth(609);
     this->setFixedHeight(375);
-    this->setWindowTitle("QtKapat v0.0.1");
+    this->setWindowTitle("QtKapat v1.0");
     ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
     // İptal Et düğmesi
     ui->pushButton_ip->setEnabled(false);
@@ -167,7 +167,7 @@ void Qtkapat::createTrayIcon(){
     trayIcon->setContextMenu(trayIconMenu);
     QIcon icon(":/images/shutdown.png");
     trayIcon->setIcon(icon);
-    trayIcon->setToolTip("Qtkapat v0.0.1");
+    trayIcon->setToolTip("Qtkapat v1.0");
     QString ileti = "Sistem tepsisinde başlatıldı";
     trayIcon->show();
     trayIcon->showMessage("Qtkapat", ileti, QSystemTrayIcon::Information, 1000);
