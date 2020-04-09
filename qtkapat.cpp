@@ -40,9 +40,9 @@
 #elif defined(Q_OS_WIN)
     constexpr int BU_BIR_LINUX = 0;
 
-    QString kapat_komutu = "shutdown -p";
-    QString ybaslat_komutu = "shutdown -r -t 0";
-    QString o_kapat_komutu = "shutdown -l";
+    QString kapat_komutu = "shutdown /p /f";
+    QString ybaslat_komutu = "shutdown /r /f";
+    QString o_kapat_komutu = "shutdown /l";
     QString askiya_al_komutu = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
 #endif
 
@@ -56,14 +56,20 @@ Qtkapat::Qtkapat(QWidget *parent) :
     this->setFixedHeight(375);
     this->setWindowTitle("QtKapat v1.0");
 
-    DugmeAyarlari();
-    LinuxKomutlari();
+    dugmeAyarlari();
+    linuxKomutlari();
     createActions();
     createTrayIcon();
 
+    // bir görev düğmesi(radiobutton) seçili ise, diğerlerini etkisiz yap.
+    connect(ui->radioButton_bz,SIGNAL(clicked()),this ,SLOT(gorevDugmeleri()));
+    connect(ui->radioButton_bs,SIGNAL(clicked()),this ,SLOT(gorevDugmeleri()));
+    connect(ui->radioButton_dk,SIGNAL(clicked()),this ,SLOT(gorevDugmeleri()));
+    connect(ui->radioButton_sy,SIGNAL(clicked()),this ,SLOT(gorevDugmeleri()));
+
     // arayüz saat:
     bir_saniye = new QTimer(this);
-    connect(bir_saniye, SIGNAL(timeout()), this, SLOT(ZamaniGuncelle()));
+    connect(bir_saniye, SIGNAL(timeout()), this, SLOT(zamaniGuncelle()));
     bir_saniye->start(1000);
 
     zamanlayici = new QTimer(this);
@@ -77,10 +83,41 @@ Qtkapat::~Qtkapat()
     delete ui;
 }
 
-void Qtkapat::DugmeAyarlari()
+void Qtkapat::gorevDugmeleri()
+{
+    // Belirtilen zaman düğmesi
+    if (ui->radioButton_bz->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(true);
+        ui->timeEdit_bs->setEnabled(false);
+        ui->spinBox_dk->setEnabled(false);
+
+      // Belirtilen saat düğmesi
+    } else if (ui->radioButton_bs->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(false);
+        ui->timeEdit_bs->setEnabled(true);
+        ui->spinBox_dk->setEnabled(false);
+
+
+      // Belirtilen dakika düğmesi
+    } else if (ui->radioButton_dk->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(false);
+        ui->timeEdit_bs->setEnabled(false);
+        ui->spinBox_dk->setEnabled(true);
+      // Şimdi düğmesi
+    } else if (ui->radioButton_sy->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(false);
+        ui->timeEdit_bs->setEnabled(false);
+        ui->spinBox_dk->setEnabled(false);
+    }
+}
+
+void Qtkapat::dugmeAyarlari()
 {
     ui->label_us->setText("Qtkapat -> Görev ve işlem zamanını belirleyin.");
-
+    //Tarih, saat ve dakika belirleme seçilene kadar etkin değil.
+    ui->dateTimeEdit_bz->setEnabled(false);
+    ui->timeEdit_bs->setEnabled(false);
+    ui->spinBox_dk->setEnabled(false);
     //Belirtilen saat:
     ui->timeEdit_bs->setTime(QTime::currentTime().addSecs(60));
     ui->timeEdit_bs->setMinimumTime(QTime::currentTime().addSecs(60));
@@ -106,7 +143,7 @@ void Qtkapat::DugmeAyarlari()
 
 }
 
-void Qtkapat::LinuxKomutlari()
+void Qtkapat::linuxKomutlari()
 {
     if (BU_BIR_LINUX == 1) {
         QProcess bash,bash2, bash3;
@@ -168,7 +205,6 @@ void Qtkapat::LinuxKomutlari()
     }
 }
 
-
 void Qtkapat::createActions()
 {
     gizle = new QAction(QString("Gizle"), this);
@@ -225,7 +261,7 @@ void Qtkapat::closeEvent(QCloseEvent *event)
     }
 }
 
-void Qtkapat::ZamaniGuncelle()
+void Qtkapat::zamaniGuncelle()
 {
     QDateTime tarih = QDateTime::currentDateTime();
     QString tarihStr = tarih.toString("dd.MM.yyyy hh:mm:ss");
@@ -233,10 +269,14 @@ void Qtkapat::ZamaniGuncelle()
     ui->label_st->setText(tarihStr);
 }
 
-void Qtkapat::IslemZamani()
+void Qtkapat::islemZamani()
 {
     // Belirtilen zaman düğmesi
     if (ui->radioButton_bz->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(true);
+        ui->timeEdit_bs->setEnabled(false);
+        ui->spinBox_dk->setEnabled(false);
+
         qint64 simdikiZaman = QDateTime::currentSecsSinceEpoch();
         QDateTime secilenZamanS= ui->dateTimeEdit_bz->dateTime();
         qint64 secilenZaman = secilenZamanS.toSecsSinceEpoch() -
@@ -245,6 +285,10 @@ void Qtkapat::IslemZamani()
 
       // Belirtilen saat düğmesi
     } else if (ui->radioButton_bs->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(false);
+        ui->timeEdit_bs->setEnabled(true);
+        ui->spinBox_dk->setEnabled(false);
+
         QTime simdikiSaatS =QTime::currentTime();
         int simdikiSaat = QTime(0,0,0).secsTo(simdikiSaatS);
         int secilenSaat = (ui->timeEdit_bs->time().hour() *3600) +
@@ -253,11 +297,15 @@ void Qtkapat::IslemZamani()
 
       // Belirtilen dakika düğmesi
     } else if (ui->radioButton_dk->isChecked()) {
+        ui->dateTimeEdit_bz->setEnabled(false);
+        ui->timeEdit_bs->setEnabled(false);
+        ui->spinBox_dk->setEnabled(true);
+
         hedef_sure = (ui->spinBox_dk->value() * 60);
     }
 
     if (hedef_sure <= 0) {
-        qDebug( "hedef süre :" "%d", hedef_sure);
+        qDebug( "hedef süre : " "%d", hedef_sure);
         QMessageBox::warning(this, "Qtkapat",
                              "Geçmiş ya da hatalı süre!",
                              QMessageBox::Ok);
@@ -286,7 +334,7 @@ void Qtkapat::on_pushButton_gb_clicked()
                     QProcess::execute(kapat_komutu);
                 } else {
                     gerisayimStr2 = " kapatılacak";
-                    IslemZamani();
+                    islemZamani();
                 }
 
     } else if (ui->radioButton_yb->isChecked()) { // yeniden başlat düğmesi
@@ -295,7 +343,7 @@ void Qtkapat::on_pushButton_gb_clicked()
                     QProcess::execute(ybaslat_komutu);
                 } else {
                     gerisayimStr2 = " yeniden başlatılacak";
-                    IslemZamani();
+                    islemZamani();
                 }
 
     } else if (ui->radioButton_ok->isChecked()) { // oturumu kapat düğmesi
@@ -304,7 +352,7 @@ void Qtkapat::on_pushButton_gb_clicked()
                     QProcess::execute(o_kapat_komutu);
                 } else {
                     gerisayimStr2 =" oturumunuzu kapatacak";
-                    IslemZamani();
+                    islemZamani();
                 }
 
     } else if (ui->radioButton_as->isChecked()) { //askıya al düğmesi
@@ -313,7 +361,7 @@ void Qtkapat::on_pushButton_gb_clicked()
                     QProcess::execute(askiya_al_komutu);
                 } else {
                     gerisayimStr2 = " askıya alınacak";
-                    IslemZamani();
+                    islemZamani();
                 }
     } else {
         ui->label_us->setText("Herhangi bir görev seçmediniz.");

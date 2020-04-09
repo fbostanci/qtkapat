@@ -26,8 +26,9 @@ private slots:
     void on_pushButton_gb_clicked();
     void on_pushButton_ip_clicked();
     void on_pushButton_hk_clicked();
+    void gorevDugmeleri();
     void slot_zamanlayici();
-    void ZamaniGuncelle();
+    void zamaniGuncelle();
     void createActions();
 
 private:
@@ -35,10 +36,10 @@ private:
     QTimer *zamanlayici;
     QTimer *bir_saniye;
 
-    void DugmeAyarlari();
+    void dugmeAyarlari();
     void createTrayIcon();
-    void LinuxKomutlari();
-    void IslemZamani();
+    void linuxKomutlari();
+    void islemZamani();
 
     QAction *gizle;
     QAction *goster;
