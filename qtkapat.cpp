@@ -81,6 +81,13 @@ Qtkapat::Qtkapat(QWidget *parent) :
 Qtkapat::~Qtkapat()
 {
     delete ui;
+    delete bir_saniye;
+    delete zamanlayici;
+    delete trayIcon;
+    delete trayIconMenu;
+    delete gizle;
+    delete goster;
+    delete cikis;
 }
 
 void Qtkapat::gorevDugmeleri()
@@ -97,12 +104,12 @@ void Qtkapat::gorevDugmeleri()
         ui->timeEdit_bs->setEnabled(true);
         ui->spinBox_dk->setEnabled(false);
 
-
       // Belirtilen dakika düğmesi
     } else if (ui->radioButton_dk->isChecked()) {
         ui->dateTimeEdit_bz->setEnabled(false);
         ui->timeEdit_bs->setEnabled(false);
         ui->spinBox_dk->setEnabled(true);
+
       // Şimdi düğmesi
     } else if (ui->radioButton_sy->isChecked()) {
         ui->dateTimeEdit_bz->setEnabled(false);
