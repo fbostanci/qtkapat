@@ -241,29 +241,9 @@ void Qtkapat::createTrayIcon()
 
 void Qtkapat::closeEvent(QCloseEvent *event)
 {
-    QMessageBox msgBox;
-
-    msgBox.setWindowTitle("Qtkapat");
-    msgBox.setWindowIcon(QIcon(":/images/shutdown.png"));
-    msgBox.setIcon(QMessageBox::Question);
-    msgBox.setText("Simge durumuna küçültülsün mü?");
-
-    QAbstractButton* pButtonYes = msgBox.addButton(("Küçült"), QMessageBox::YesRole);
-    QAbstractButton* pButtonNo = msgBox.addButton(("İptal"), QMessageBox::NoRole);
-    QAbstractButton* pButtonReject = msgBox.addButton(("Çıkış"), QMessageBox::RejectRole);
-
-    msgBox.exec();
-
-    if (msgBox.clickedButton()==pButtonYes) {
-        qDebug("küçült");
-        event->ignore();
+    if (trayIcon->isVisible())
+    {
         this->hide();
-    } else if (msgBox.clickedButton()==pButtonReject) {
-        qDebug("Çıkış");
-        event->accept();
-        this->close();
-     } else if (msgBox.clickedButton()==pButtonNo) {
-        qDebug("iptal");
         event->ignore();
     }
 }
