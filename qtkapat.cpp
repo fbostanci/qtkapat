@@ -402,15 +402,14 @@ void Qtkapat::slot_zamanlayici()
         ui->pushButton_gb->setEnabled(true);
         zamanlayici->stop();
 
-        if (ui->radioButton_kt->isChecked()) {
+        if (ui->radioButton_kt->isChecked())
             QProcess::execute(kapat_komutu);
-        } else if (ui->radioButton_yb->isChecked()) {
+         else if (ui->radioButton_yb->isChecked())
             QProcess::execute(ybaslat_komutu);
-        } else if (ui->radioButton_ok->isChecked()) {
+         else if (ui->radioButton_ok->isChecked())
             QProcess::execute(o_kapat_komutu);
-        } else if (ui->radioButton_as->isChecked()) {
-            QProcess::execute(askiya_al_komutu);
-        }
+         else if (ui->radioButton_as->isChecked())
+            QProcess::execute(askiya_al_komutu);   
     }
     hedef_sure--;
 }

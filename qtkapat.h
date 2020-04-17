@@ -19,6 +19,7 @@ public:
     Qtkapat(QWidget *parent = nullptr);
     ~Qtkapat();
 
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 
