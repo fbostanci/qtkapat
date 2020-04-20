@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QWidget>
+#include <QProcess>
 #include <QSystemTrayIcon>
 #include <QAction>
 #include <QMenu>
@@ -36,6 +37,7 @@ private:
     Ui::Qtkapat *ui;
     QTimer *zamanlayici;
     QTimer *bir_saniye;
+    QProcess *bash;
 
     void dugmeAyarlari();
     void createTrayIcon();

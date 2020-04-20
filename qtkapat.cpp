@@ -4,7 +4,7 @@
 //              Copyright(C) 2020, FB <ironic{at}yaani.com>                 *
 //                 https://gitlab.com/fbostanci/qtkapat                     *
 //                            qtkapat v1.0                                  *
-//                              GPL v3                                      *
+//                               GPLv3                                      *
 //                                                                          *
 //--------------------------------------------------------------------------+
 //                                                                          *
@@ -26,7 +26,7 @@
 #include "qtkapat.h"
 #include "ui_qtkapat.h"
 
-#include <QProcess>
+
 #include <QTimer>
 #include <QTime>
 #include <QDate>
@@ -83,6 +83,7 @@ Qtkapat::~Qtkapat()
     delete ui;
     delete bir_saniye;
     delete zamanlayici;
+    delete bash;
     delete trayIcon;
     delete trayIconMenu;
     delete gizle;
@@ -153,24 +154,26 @@ void Qtkapat::dugmeAyarlari()
 void Qtkapat::linuxKomutlari()
 {
     if (BU_BIR_LINUX == 1) {
-        QProcess bash,bash2, bash3;
+        bash = new QProcess(this);
 
-        bash.start("bash", QStringList()<<"-c"<<"if [[ -n $KDE_SESSION_UID ]];then echo kde;fi");
-        bash.waitForFinished();
-        QString output = bash.readAllStandardOutput();
+        bash->start("bash", QStringList()<<"-c"<<"if [[ -n $KDE_SESSION_UID ]];then echo kde;fi");
+        bash->waitForFinished();
+        QString output = bash->readAllStandardOutput();
         output = output.trimmed();
+        bash->close();
 
-        bash2.start("bash", QStringList()<<"-c"<<"id -u -n");
-        bash2.waitForFinished();
-        QString user = bash2.readAllStandardOutput();
+        bash->start("bash", QStringList()<<"-c"<<"id -u -n");
+        bash->waitForFinished();
+        QString user = bash->readAllStandardOutput();
         user = user.trimmed();
+        bash->close();
 
-        bash3.start("bash", QStringList()<<"-c"<<"if [[ -n $(pidof xfce4-session) ]];then echo xfce;fi");
-        bash3.waitForFinished();
-        QString output2 = bash3.readAllStandardOutput();
+        bash->start("bash", QStringList()<<"-c"<<"if [[ -n $(pidof xfce4-session) ]];then echo xfce;fi");
+        bash->waitForFinished();
+        QString output2 = bash->readAllStandardOutput();
         output2 = output2.trimmed();
 
-        if (user == "root") {
+        if (QString::compare(user,"root") == 0) {
             ui->radioButton_kt->setEnabled(false);
             ui->radioButton_yb->setEnabled(false);
             ui->radioButton_ok->setEnabled(false);
@@ -187,7 +190,7 @@ void Qtkapat::linuxKomutlari()
             ui->label_us->setText("<b>Qtkapat -> root haklarıyla kullanılamaz!!!</b>");
         }
 
-        if (output == "kde") {
+        if (QString::compare(output,"kde") == 0) {
             kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 2 2";
             ybaslat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 1 2";
             o_kapat_komutu = "qdbus org.kde.ksmserver /KSMServer logout 0 3 3";
@@ -195,7 +198,7 @@ void Qtkapat::linuxKomutlari()
                                 " /org/freedesktop/PowerManagement Suspend");
             qDebug("KDE");
 
-        } else if (output2 == "xfce") {
+        } else if (QString::compare(output2,"xfce") == 0) {
             kapat_komutu = "xfce4-session-logout --halt";
             ybaslat_komutu = "xfce4-session-logout --reboot";
             o_kapat_komutu = "xfce4-session-logout --logout";
@@ -318,6 +321,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     if (ui->radioButton_kt->isChecked()) { // kapat düğmesi seçili ise
                 if (ui->radioButton_sy->isChecked()) { // şimdi düğmesi
                     ui->label_us->setText("Sisteminiz kapatılacak.");
+                    qDebug() << kapat_komutu;
                     QProcess::execute(kapat_komutu);
                 } else {
                     gerisayimStr2 = " kapatılacak";
@@ -327,6 +331,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_yb->isChecked()) { // yeniden başlat düğmesi
                 if (ui->radioButton_sy->isChecked()){
                     ui->label_us->setText("Sisteminiz yeniden başlatılacak");
+                    qDebug() << ybaslat_komutu;
                     QProcess::execute(ybaslat_komutu);
                 } else {
                     gerisayimStr2 = " yeniden başlatılacak";
@@ -336,6 +341,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_ok->isChecked()) { // oturumu kapat düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Oturumunuz kapatılacak.");
+                    qDebug() << o_kapat_komutu;
                     QProcess::execute(o_kapat_komutu);
                 } else {
                     gerisayimStr2 =" oturumunuzu kapatacak";
@@ -345,6 +351,7 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_as->isChecked()) { //askıya al düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Sisteminiz askıya alınacak");
+                    qDebug() << askiya_al_komutu;
                     QProcess::execute(askiya_al_komutu);
                 } else {
                     gerisayimStr2 = " askıya alınacak";
