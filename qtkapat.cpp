@@ -294,7 +294,7 @@ void Qtkapat::islemZamani()
     if (hedef_sure <= 0) {
         qDebug( "hedef süre : " "%d", hedef_sure);
         QMessageBox::warning(this, "Qtkapat",
-                             "Geçmiş ya da hatalı süre!",
+                             "Geçmiş süre!",
                              QMessageBox::Ok);
     } else {
         ui->pushButton_gb->setEnabled(false);

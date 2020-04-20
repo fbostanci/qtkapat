@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
     {
         _singular.detach();
         return -42;
-    } else
+    } else {
         _singular.create(1);
-
+    }
     QApplication a(argc, argv);
 
     Qtkapat w;

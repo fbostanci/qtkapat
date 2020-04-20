@@ -1,0 +1,13 @@
+Source: qtkapat
+Section: misc
+Priority: optional
+Maintainer: Fatih Bostanci <faopera@gmail.com>
+Build-Depends: debhelper (>= 12~), qtbase5-dev, qtbase5-dev-tools, qt5-qmake
+Standards-Version: 4.3.0
+Homepage: https://gitlab.com/fbostanci/qtkapat
+
+Package: qtkapat
+Architecture: any
+Depends: libqt5gui5, libqt5widgets5,libqt5core5a, ${misc:Depends}, ${shlibs:Depends}
+Description: Qtkapat
+ Gnu/Linux ve Windows icin sure ayarli bilgisayar kapatici.

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Qtkapat
+Comment=Sure ayarli sistem kapatici
+Exec=/usr/bin/qtkapat
+Icon=system-shutdown
+Terminal=false
+Categories=Application;Utility;
+

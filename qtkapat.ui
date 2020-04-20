@@ -152,8 +152,11 @@
        <height>29</height>
       </rect>
      </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
      <property name="maximum">
-      <number>144</number>
+      <number>99</number>
      </property>
     </widget>
     <widget class="QDateTimeEdit" name="dateTimeEdit_bz">
@@ -381,7 +384,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>121</width>
+       <width>125</width>
        <height>21</height>
       </rect>
      </property>
@@ -392,9 +395,9 @@
     <widget class="QSpinBox" name="spinBox_uy">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>141</x>
        <y>10</y>
-       <width>42</width>
+       <width>41</width>
        <height>22</height>
       </rect>
      </property>
@@ -413,7 +416,7 @@
       <rect>
        <x>190</x>
        <y>10</y>
-       <width>111</width>
+       <width>121</width>
        <height>21</height>
       </rect>
      </property>
@@ -424,9 +427,9 @@
     <widget class="QPushButton" name="pushButton_gb">
      <property name="geometry">
       <rect>
-       <x>420</x>
+       <x>430</x>
        <y>10</y>
-       <width>161</width>
+       <width>151</width>
        <height>31</height>
       </rect>
      </property>
@@ -451,7 +454,7 @@
     <widget class="QPushButton" name="pushButton_ip">
      <property name="geometry">
       <rect>
-       <x>309</x>
+       <x>320</x>
        <y>10</y>
        <width>101</width>
        <height>31</height>
