@@ -83,7 +83,6 @@ Qtkapat::~Qtkapat()
     delete ui;
     delete bir_saniye;
     delete zamanlayici;
-    delete bash;
     delete trayIcon;
     delete trayIconMenu;
     delete gizle;
