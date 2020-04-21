@@ -160,18 +160,11 @@ void Qtkapat::linuxKomutlari()
         bash->waitForFinished();
         QString output = bash->readAllStandardOutput();
         output = output.trimmed();
-        bash->close();
 
         bash->start("bash", QStringList()<<"-c"<<"id -u -n");
         bash->waitForFinished();
         QString user = bash->readAllStandardOutput();
         user = user.trimmed();
-        bash->close();
-
-        bash->start("bash", QStringList()<<"-c"<<"if [[ -n $(pidof xfce4-session) ]];then echo xfce;fi");
-        bash->waitForFinished();
-        QString output2 = bash->readAllStandardOutput();
-        output2 = output2.trimmed();
 
         if (QString::compare(user,"root") == 0) {
             ui->radioButton_kt->setEnabled(false);
@@ -197,13 +190,6 @@ void Qtkapat::linuxKomutlari()
             askiya_al_komutu = ("qdbus org.kde.Solid.PowerManagement"
                                 " /org/freedesktop/PowerManagement Suspend");
             qDebug("KDE");
-
-        } else if (QString::compare(output2,"xfce") == 0) {
-            kapat_komutu = "xfce4-session-logout --halt";
-            ybaslat_komutu = "xfce4-session-logout --reboot";
-            o_kapat_komutu = "xfce4-session-logout --logout";
-            askiya_al_komutu ="xfce4-session-logout --suspend";
-            qDebug("xfce");
 
         } else {  //systemd
             kapat_komutu = "systemctl poweroff";
@@ -321,7 +307,6 @@ void Qtkapat::on_pushButton_gb_clicked()
     if (ui->radioButton_kt->isChecked()) { // kapat düğmesi seçili ise
                 if (ui->radioButton_sy->isChecked()) { // şimdi düğmesi
                     ui->label_us->setText("Sisteminiz kapatılacak.");
-                    qDebug() << kapat_komutu;
                     QProcess::execute(kapat_komutu);
                 } else {
                     gerisayimStr2 = " kapatılacak";
@@ -331,7 +316,6 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_yb->isChecked()) { // yeniden başlat düğmesi
                 if (ui->radioButton_sy->isChecked()){
                     ui->label_us->setText("Sisteminiz yeniden başlatılacak");
-                    qDebug() << ybaslat_komutu;
                     QProcess::execute(ybaslat_komutu);
                 } else {
                     gerisayimStr2 = " yeniden başlatılacak";
@@ -341,7 +325,6 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_ok->isChecked()) { // oturumu kapat düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Oturumunuz kapatılacak.");
-                    qDebug() << o_kapat_komutu;
                     QProcess::execute(o_kapat_komutu);
                 } else {
                     gerisayimStr2 =" oturumunuzu kapatacak";
@@ -351,7 +334,6 @@ void Qtkapat::on_pushButton_gb_clicked()
     } else if (ui->radioButton_as->isChecked()) { //askıya al düğmesi
                 if(ui->radioButton_sy->isChecked()){
                    ui->label_us->setText("Sisteminiz askıya alınacak");
-                    qDebug() << askiya_al_komutu;
                     QProcess::execute(askiya_al_komutu);
                 } else {
                     gerisayimStr2 = " askıya alınacak";
