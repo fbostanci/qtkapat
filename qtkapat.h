@@ -50,7 +50,7 @@ private:
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
 
-    int hedef_sure;
+    long int hedef_sure;
     QString gerisayimStr, gerisayimStr2;
 #if defined(Q_OS_LINUX)
     QString kapat_komutu, ybaslat_komutu;

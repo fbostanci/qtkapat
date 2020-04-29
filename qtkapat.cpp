@@ -132,8 +132,9 @@ void Qtkapat::dugmeAyarlari()
     ui->spinBox_dk->setValue(5);
     //Belirtilen zaman: tarih ve saat ayarı
     ui->dateTimeEdit_bz->setDisplayFormat("dd.MM.yyyy hh:mm");
-    ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit_bz->setDateTime(QDateTime::currentDateTime().addSecs(60));
+    ui->dateTimeEdit_bz->setMinimumDateTime(QDateTime::currentDateTime());
+    ui->dateTimeEdit_bz->setMaximumDateTime(QDateTime::currentDateTime().addMonths(2));
 
     // İptal Et düğmesi
     ui->pushButton_ip->setEnabled(false);
@@ -280,7 +281,6 @@ void Qtkapat::islemZamani()
     }
 
     if (hedef_sure <= 0) {
-        qDebug( "hedef süre : " "%d", hedef_sure);
         QMessageBox::warning(this, "Qtkapat",
                              "Geçmiş süre!",
                              QMessageBox::Ok);
